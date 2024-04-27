@@ -1,0 +1,63 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  banner?: string;
+}
+const { title, description = '', banner = '' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>{title}</title>
+    <meta name="application-name" content={title} />
+    <meta name="description" content={description} />
+    <meta charset="UTF-8" />
+    <meta name="theme-color" content="#fff" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Google / Search Engine Tags -->
+    <meta itemprop="name" content={title} />
+    <meta itemprop="description" content={description} />
+    {banner && <meta itemprop="image" content={banner} />}
+
+    <!-- Facebook Meta Tags -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {banner && <meta property="og:image" content={banner} />}
+    <meta property="og:url" content={Astro.url.origin} />
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {banner && <meta name="twitter:image" content={banner} />}
+  </head>
+  <body class="App">
+    <slot />
+  </body>
+</html>
+
+<style lang="scss">
+  :root {
+    --pinkColor: #eb2756;
+    --whiteColor: #fefefe;
+    --grayColor: #a0c976;
+    --blueColor: #28435b;
+  }
+
+  #root,
+  .App,
+  .content {
+    min-height: 100vh;
+  }
+
+  .content {
+    display: grid;
+    grid-template-rows: 1fr;
+  }
+</style>

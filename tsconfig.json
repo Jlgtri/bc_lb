@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "astro/tsconfigs/strictest",
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "noErrorTruncation": true,
+    "preserveWatchOutput": true
+  },
+  "watchOptions": {
+    "excludeDirectories": [
+      "_build",
+      "**/node_modules"
+    ]
+  },
+  "exclude": [
+    "_build",
+    "**/node_modules",
+    "dist"
+  ]
+}
