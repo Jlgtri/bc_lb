@@ -14,4 +14,9 @@ declare global {
     decrementCounter(): Promise<TransactionResponse>;
     getCount(): Promise<number>;
   }
+
+  interface SimpleStorage extends Contract {
+    get(): Promise<number>;
+    set(x: number): Promise<TransactionResponse>;
+  }
 }

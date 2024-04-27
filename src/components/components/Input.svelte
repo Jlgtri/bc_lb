@@ -1,31 +1,20 @@
 <script lang="ts">
-  import { getAddress } from 'ethers';
   import { createEventDispatcher } from 'svelte';
 
-  export let daiAddress;
+  export let daiAddress: string,
+    placeholder: string = 'Введіть значення',
+    error: string = '';
 
   const dispatch = createEventDispatcher();
-
-  $: error = '';
-  $: _daiAddress = daiAddress;
-
-  const checkAddress = (address: string) => {
-    error = '';
-    try {
-      dispatch('change', (_daiAddress = getAddress(address)));
-    } catch {
-      error = 'Адрес не вірний';
-    }
-  };
 </script>
 
 <div class="input">
   <div class="input__title">Введіть адрессу смарт - контракту</div>
   <input
     type="text"
-    placeholder="Введіть counter AT"
-    value={_daiAddress}
-    on:input={(e) => checkAddress(e.currentTarget.value)} />
+    {placeholder}
+    value={daiAddress}
+    on:input={(e) => dispatch('change', e.currentTarget.value)} />
   <div class="input__error">{error}</div>
 </div>
 

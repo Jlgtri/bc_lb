@@ -1,42 +1,23 @@
 <script lang="ts">
-  export let count: number, daiContract: Counter | null;
+  export let count: number,
+    disabled: boolean = false;
 
   import { createEventDispatcher } from 'svelte';
 
   const dispatch = createEventDispatcher();
-
-  async function increment() {
-    dispatch('change', true);
-    try {
-      console.log(await (await daiContract!.incrementCounter()).wait());
-    } catch {
-      alert('Транзакція відхилена');
-    } finally {
-      dispatch('change', false);
-    }
-  }
-
-  async function decrement() {
-    dispatch('change', true);
-    try {
-      console.log(await (await daiContract!.decrementCounter()).wait());
-    } catch {
-      alert('Транзакція відхилена');
-    } finally {
-      dispatch('change', false);
-    }
-  }
-
-  $: disabled = !window.ethereum || !daiContract;
 </script>
 
 <div class="interface">
   <div class="btn btn_dec">
-    <button on:click={decrement} {disabled}>decrement</button>
+    <button on:click={() => dispatch('decrement')} {disabled}>
+      decrement
+    </button>
   </div>
   <div class="count">{count}</div>
   <div class="btn">
-    <button on:click={increment} {disabled}>increment</button>
+    <button on:click={() => dispatch('increment')} {disabled}>
+      increment
+    </button>
   </div>
 </div>
 
