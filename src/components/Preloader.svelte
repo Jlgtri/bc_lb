@@ -1,25 +1,35 @@
 <script lang="ts">
   import Counter from './Counter/Counter.svelte';
   import Election from './Election/Election.svelte';
+  import Payment from './Payment/Payment.svelte';
   import SimpleStorage from './SimpleStorage/SimpleStorage.svelte';
 
   $: isFetching = false;
 </script>
 
-{#if isFetching}
-  <div class="preloader">
-    <div class="preloader__body">Loading...</div>
-  </div>
-{:else}
-  <Counter on:load={({ detail: value }) => (isFetching = value)} />
-  <SimpleStorage on:load={({ detail: value }) => (isFetching = value)} />
-  <Election on:load={({ detail: value }) => (isFetching = value)} />
-{/if}
+<div class="preloader {isFetching ? '' : 'hidden'}">
+  <div class="preloader__body">Loading...</div>
+</div>
+<Counter on:load={({ detail: value }) => (isFetching = value)} />
+<SimpleStorage on:load={({ detail: value }) => (isFetching = value)} />
+<Election on:load={({ detail: value }) => (isFetching = value)} />
+<Payment on:load={({ detail: value }) => (isFetching = value)} />
 
 <style lang="scss">
   .preloader {
-    height: 100vh;
     display: flex;
+    position: fixed;
+
+    height: 100vh;
+    z-index: 9999;
+
+    background-color: white;
+
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+
     align-items: center;
     justify-content: center;
 
@@ -28,5 +38,9 @@
       font-size: 30px;
       font-weight: bold;
     }
+  }
+
+  .hidden {
+    display: none;
   }
 </style>

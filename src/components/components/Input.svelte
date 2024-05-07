@@ -22,10 +22,12 @@
   .input {
     padding: 10px 0px;
     margin-bottom: 20px;
+
     &__title {
       text-align: center;
       margin-bottom: 20px;
     }
+
     &__error {
       text-align: center;
       font-weight: normal;

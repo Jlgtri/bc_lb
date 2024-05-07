@@ -25,8 +25,8 @@ declare global {
   }
 
   interface SimpleStorage extends Contract {
-    readonly get(): Promise<number>;
     readonly set(x: number): Promise<TransactionResponse>;
+    readonly get(): Promise<number>;
   }
 
   interface Candidate {
@@ -53,5 +53,13 @@ declare global {
     readonly candidatesCount(): Promise<number>;
     readonly voters(address: string): Promise<boolean>;
     readonly winningProposal(): Promise<number>;
+  }
+
+  interface Payment extends Contract {
+    readonly payBill(address: string, ...options): Promise<TransactionResponse>;
+
+    readonly getBalance(): Promise<number>;
+    readonly transactionAmount(): Promise<bigint>;
+    readonly transactionCount(): Promise<number>;
   }
 }
