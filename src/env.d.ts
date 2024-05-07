@@ -4,19 +4,54 @@
 import { MetaMaskInpageProvider } from '@metamask/providers';
 import { Contract, TransactionResponse } from 'ethers';
 
+
 declare global {
+  interface ImportMetaEnv {
+    readonly PUBLIC_CHAIN_ID: string;
+  }
+
+  interface ImportMeta {
+    readonly env: ImportMetaEnv;
+  }
+
   interface Window {
-    ethereum?: MetaMaskInpageProvider;
+    readonly ethereum?: MetaMaskInpageProvider;
   }
 
   interface Counter extends Contract {
-    incrementCounter(): Promise<TransactionResponse>;
-    decrementCounter(): Promise<TransactionResponse>;
-    getCount(): Promise<number>;
+    readonly incrementCounter(): Promise<TransactionResponse>;
+    readonly decrementCounter(): Promise<TransactionResponse>;
+    readonly getCount(): Promise<number>;
   }
 
   interface SimpleStorage extends Contract {
-    get(): Promise<number>;
-    set(x: number): Promise<TransactionResponse>;
+    readonly get(): Promise<number>;
+    readonly set(x: number): Promise<TransactionResponse>;
+  }
+
+  interface Candidate {
+    id: number?;
+
+    name: string;
+    lastName: string;
+    patronymic: string;
+    info: string;
+
+    voteCount: number?;
+  }
+
+  interface Election extends Contract {
+    readonly addCandidate(
+      _lastName: string,
+      _name: string,
+      _patronymic: string,
+      info: string,
+    ): Promise<TransactionResponse>;
+    readonly vote(_candidateId: number): Promise<TransactionResponse>;
+
+    readonly candidates(number: number): Promise<Candidate>;
+    readonly candidatesCount(): Promise<number>;
+    readonly voters(address: string): Promise<boolean>;
+    readonly winningProposal(): Promise<number>;
   }
 }

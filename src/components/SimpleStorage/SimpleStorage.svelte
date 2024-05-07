@@ -1,18 +1,12 @@
 <script lang="ts">
-  import {
-    BrowserProvider,
-    Contract,
-    getAddress,
-    getDefaultProvider,
-    type Eip1193Provider,
-  } from 'ethers';
+  import { getAddress } from 'ethers';
   import { createEventDispatcher } from 'svelte';
-  import daiAbi from '../../abis/SimpleStorage.json';
   import Input from '../components/Input.svelte';
-  import Storage from '../components/Storage.svelte';
+  import { getContract } from '../utils/web3.svelte';
+  import daiAbi from './SimpleStorage.json';
+  import Storage from './components/Storage.svelte';
 
   const dispatch = createEventDispatcher();
-
   $: error = '';
   $: errorStorage = '';
 
@@ -28,31 +22,23 @@
   async function getDaiContract(_daiAddress: string | null = null) {
     try {
       error = '';
-      daiAddress = getAddress(_daiAddress || '');
+      storageValue = null;
+      daiAddress = getAddress(_daiAddress ?? '');
     } catch {
       daiContract = null;
-      storageValue = null;
       error = 'Адрес не вірний';
       return;
     }
 
-    if (!window.ethereum) {
-      alert(
-        'MetaMask не встановлено; ' +
-          'використовуючи значення за замовчуванням лише для читання',
-      );
-      let provider = getDefaultProvider('goerli');
-      daiContract = new Contract(
-        daiAddress,
-        daiAbi,
-        provider,
-      ) as SimpleStorage;
-    }
+    daiContract = (await getContract(daiAddress, daiAbi)) as SimpleStorage;
 
-    let provider = new BrowserProvider(window.ethereum as Eip1193Provider);
-    const signer = await provider.getSigner();
-    daiContract = new Contract(daiAddress, daiAbi, signer) as SimpleStorage;
-    storageValue = await daiContract!.get();
+    try {
+      storageValue = await daiContract!.get();
+    } catch {
+      daiContract = null;
+      error = 'Помилка завантаження';
+      return;
+    }
   }
 
   async function change(value: string) {

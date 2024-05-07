@@ -1,17 +1,10 @@
 <script lang="ts">
-  import {
-    BrowserProvider,
-    Contract,
-    TransactionResponse,
-    getAddress,
-    getDefaultProvider,
-    type Eip1193Provider,
-  } from 'ethers';
-  import daiAbi from '../../abis/Counter.json';
-
+  import { getAddress } from 'ethers';
   import { createEventDispatcher } from 'svelte';
-  import Buttons from '../components/Buttons.svelte';
   import Input from '../components/Input.svelte';
+  import { getContract } from '../utils/web3.svelte';
+  import daiAbi from './Counter.json';
+  import Buttons from './components/Buttons.svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -27,34 +20,28 @@
   async function getDaiContract(_daiAddress: string | null = null) {
     try {
       error = '';
-      daiAddress = getAddress(_daiAddress || '');
+      count = 0;
+      daiAddress = getAddress(_daiAddress ?? '');
     } catch {
       daiContract = null;
-      count = 0;
       error = 'Адрес не вірний';
       return;
     }
 
-    if (!window.ethereum) {
-      alert(
-        'MetaMask не встановлено; ' +
-          'використовуючи значення за замовчуванням лише для читання',
-      );
-      let provider = getDefaultProvider('goerli');
-      daiContract = new Contract(daiAddress, daiAbi, provider) as Counter;
+    daiContract = (await getContract(daiAddress, daiAbi)) as Counter;
+    try {
+      count = Number(await daiContract!.getCount());
+    } catch (exception) {
+      daiContract = null;
+      error = 'Помилка завантаження';
+      return;
     }
-
-    let provider = new BrowserProvider(window.ethereum as Eip1193Provider);
-    const signer = await provider.getSigner();
-    daiContract = new Contract(daiAddress, daiAbi, signer) as Counter;
-
-    count = Number(await daiContract!.getCount());
   }
 
-  async function transaction(tx: TransactionResponse) {
+  async function increment() {
     dispatch('load', true);
     try {
-      console.log(await tx.wait());
+      console.log(await (await daiContract!.incrementCounter()).wait());
       count = Number(await daiContract!.getCount());
     } catch {
       alert('Транзакція відхилена');
@@ -63,12 +50,16 @@
     }
   }
 
-  async function increment() {
-    await transaction(await daiContract!.incrementCounter());
-  }
-
   async function decrement() {
-    await transaction(await daiContract!.decrementCounter());
+    dispatch('load', true);
+    try {
+      console.log(await (await daiContract!.decrementCounter()).wait());
+      count = Number(await daiContract!.getCount());
+    } catch {
+      alert('Транзакція відхилена');
+    } finally {
+      dispatch('load', false);
+    }
   }
 </script>
 
