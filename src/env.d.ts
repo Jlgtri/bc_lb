@@ -70,4 +70,16 @@ declare global {
     readonly cupcakeBalances(address: string): Promise<number>;
     readonly owner(): Promise<string>;
   }
+
+  interface LockedFunds extends Contract {
+    readonly deposit(...options): Promise<TransactionResponse>;
+    readonly withdraw(): Promise<TransactionResponse>;
+
+    readonly deposits(address: string): Promise<bigint>;
+    readonly getBalanceAccount(address: string): Promise<bigint>;
+    readonly getDeposit(address: string): Promise<bigint>;
+    readonly getTimestamp(): Promise<bigint>;
+    readonly lockTime(): Promise<bigint>;
+    readonly owner(): Promise<string>;
+  }
 }

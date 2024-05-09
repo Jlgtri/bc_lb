@@ -1,4 +1,5 @@
 <script lang="ts">
+  import LockedFunds from './LockedFunds/LockedFunds.svelte';
   import VendingMachine from './VendingMachine/VendingMachine.svelte';
 
   $: isFetching = false;
@@ -7,7 +8,9 @@
 <div class="preloader {isFetching ? '' : 'hidden'}">
   <div class="preloader__body">Loading...</div>
 </div>
+
 <VendingMachine on:load={({ detail: value }) => (isFetching = value)} />
+<LockedFunds on:load={({ detail: value }) => (isFetching = value)} />
 
 <style lang="scss">
   .preloader {
