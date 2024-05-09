@@ -2,7 +2,8 @@
   import { getAddress } from 'ethers';
   import { createEventDispatcher } from 'svelte';
 
-  export let placeholder: string = 'Введіть значення';
+  export let name: string = 'смарт - контракту',
+    placeholder: string = 'Введіть значення';
 
   const dispatch = createEventDispatcher();
 
@@ -19,7 +20,9 @@
 </script>
 
 <div class="input">
-  <div class="input__title">Введіть адрессу смарт - контракту</div>
+  <div class="input__title">
+    Введіть адресу <span class="input__title__bold">{name}</span>
+  </div>
   <input
     type="text"
     {placeholder}
@@ -35,6 +38,11 @@
     &__title {
       text-align: center;
       margin-bottom: 20px;
+
+      &__bold {
+        font-weight: bold;
+        filter: brightness(90%);
+      }
     }
 
     &__error {

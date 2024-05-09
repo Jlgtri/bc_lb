@@ -94,7 +94,9 @@
 <div class="content">
   <main class="main">
     <div class="centerForm">
-      <Input on:change={({ detail: address }) => getDaiContract(address)} />
+      <Input
+        name="Election"
+        on:change={({ detail: address }) => getDaiContract(address)} />
 
       <div class="mainForm">
         <ResultTable {candidatesCount} {winner} />

@@ -98,6 +98,7 @@
       <div class="container">
         <div class="indecResult__content">
           <Input
+            name="VendingMachine"
             on:change={({ detail: address }) => getDaiContract(address)} />
           <Balances {balance} {total}></Balances>
           <BuyCapcake

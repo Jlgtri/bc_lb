@@ -1,5 +1,6 @@
 <script lang="ts">
   import LockedFunds from './LockedFunds/LockedFunds.svelte';
+  import SimpleTrustlessEscrow from './SimpleTrustlessEscrow/SimpleTrustlessEscrow.svelte';
   import VendingMachine from './VendingMachine/VendingMachine.svelte';
 
   $: isFetching = false;
@@ -11,6 +12,7 @@
 
 <VendingMachine on:load={({ detail: value }) => (isFetching = value)} />
 <LockedFunds on:load={({ detail: value }) => (isFetching = value)} />
+<SimpleTrustlessEscrow on:load={({ detail: value }) => (isFetching = value)} />
 
 <style lang="scss">
   .preloader {

@@ -55,6 +55,7 @@
       <div class="container">
         <div class="indecResult__content">
           <Input
+            name="Payment"
             on:change={({ detail: address }) => getDaiContract(address)} />
           <Statistics {transactionCount} {transactionAmount} />
           <PaymentForm

@@ -59,6 +59,7 @@
       <div class="container">
         <div class="indecResult__content">
           <Input
+            name="Counter"
             placeholder="Введіть counter AT"
             on:change={({ detail: address }) => getDaiContract(address)} />
           <Buttons

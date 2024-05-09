@@ -46,7 +46,9 @@
     <div class="indecResult">
       <div class="container">
         <div class="indecResult__content">
-          <Input on:change={({ detail: value }) => getDaiContract(value)} />
+          <Input
+            name="SimpleStorage"
+            on:change={({ detail: value }) => getDaiContract(value)} />
           <Storage
             {storageValue}
             disabled={!window.ethereum || !daiContract}

@@ -106,6 +106,7 @@
       <div class="container">
         <div class="indecResult__content">
           <Input
+            name="LockedFunds"
             on:change={({ detail: address }) => getDaiContract(address)} />
           <Deposits {currentBalance} {balance} {total} />
           <DepositForm

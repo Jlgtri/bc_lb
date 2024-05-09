@@ -82,4 +82,13 @@ declare global {
     readonly lockTime(): Promise<bigint>;
     readonly owner(): Promise<string>;
   }
+
+  interface SimpleTrustlessEscrow extends Contract {
+    readonly release(): Promise<TransactionResponse>;
+
+    readonly beneficiary(): Promise<string>;
+    readonly depositor(): Promise<string>;
+    readonly getBalance(): Promise<bigint>;
+    readonly releaseTime(): Promise<bigint>;
+  }
 }

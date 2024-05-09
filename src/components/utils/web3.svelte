@@ -47,7 +47,7 @@
     address: string,
     abi: Interface | InterfaceAbi,
   ) {
-    if (!window.ethereum) {
+    if (!window.ethereum || !window.ethereum.isConnected()) {
       alert(
         'MetaMask не встановлено; ' +
           'використовуючи значення за замовчуванням лише для читання',
