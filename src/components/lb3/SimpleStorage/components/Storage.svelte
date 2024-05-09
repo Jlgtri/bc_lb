@@ -1,25 +1,37 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
 
-  export let value: number | null,
-    disabled: boolean = false,
-    error: string | null = '';
+  export let storageValue: number | null,
+    disabled: boolean = false;
 
-  $: _value = '';
+  let value: number | null;
+  $: value = null;
+  $: error = '';
 
   const dispatch = createEventDispatcher();
+
+  async function change(_value: string) {
+    error = '';
+    if (isNaN(Number.parseInt(_value))) {
+      value = null;
+      error = 'Значення не підходить';
+    } else {
+      value = Number.parseInt(_value);
+    }
+  }
 </script>
 
 <div class="storage">
-  <div class="storage__getValue">{value ?? 'Номер не визначений'}</div>
+  <div class="storage__getValue">{storageValue ?? 'Номер не визначений'}</div>
   <div class="storage__setValue">
     <input
       type="number"
-      value={_value}
       {disabled}
-      on:change={(e) => (_value = e.currentTarget.value)} />
-    <button on:click={() => dispatch('change', _value)} {disabled}>
-      set Value
+      on:change={(e) => change(e.currentTarget.value)} />
+    <button
+      {disabled}
+      on:click={() => (value != null ? dispatch('change', value) : null)}>
+      Set Value
     </button>
   </div>
   <div class="storage__error">{error}</div>

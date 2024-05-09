@@ -1,14 +1,11 @@
 <script lang="ts">
-  import { getAddress } from 'ethers';
   import { createEventDispatcher } from 'svelte';
-  import Input from '../components/Input.svelte';
-  import { getContract } from '../utils/web3.svelte';
+  import Input from '../../components/Input.svelte';
+  import { getContract } from '../../utils/web3.svelte';
   import daiAbi from './SimpleStorage.json';
   import Storage from './components/Storage.svelte';
 
   const dispatch = createEventDispatcher();
-  $: error = '';
-  $: errorStorage = '';
 
   let storageValue: number | null;
   $: storageValue = null;
@@ -16,43 +13,26 @@
   let daiContract: SimpleStorage | null;
   $: daiContract = null;
 
-  let daiAddress: string;
-  $: daiAddress = '';
-
-  async function getDaiContract(_daiAddress: string | null = null) {
-    try {
-      error = '';
-      storageValue = null;
-      daiAddress = getAddress(_daiAddress ?? '');
-    } catch {
-      daiContract = null;
-      error = 'Адрес не вірний';
-      return;
-    }
-
+  async function getDaiContract(daiAddress: string) {
     daiContract = (await getContract(daiAddress, daiAbi)) as SimpleStorage;
+    await refresh();
+  }
 
+  async function refresh() {
+    if (!daiContract) return;
     try {
-      storageValue = await daiContract!.get();
+      storageValue = await daiContract.get();
     } catch {
-      daiContract = null;
-      error = 'Помилка завантаження';
-      return;
+      daiContract = storageValue = null;
+      alert('Помилка завантаження');
     }
   }
 
-  async function change(value: string) {
-    errorStorage = '';
-    if (isNaN(Number.parseInt(value))) {
-      errorStorage = 'Значення не підходить';
-      return;
-    }
-    storageValue = Number.parseInt(value);
-
+  async function change(value: number) {
     dispatch('load', true);
     try {
-      console.log(await (await daiContract!.set(storageValue)).wait());
-      storageValue = Number(await daiContract!.get());
+      console.log(await (await daiContract!.set(value)).wait());
+      await refresh();
     } catch {
       alert('Транзакція відхилена');
     } finally {
@@ -66,14 +46,10 @@
     <div class="indecResult">
       <div class="container">
         <div class="indecResult__content">
-          <Input
-            {daiAddress}
-            {error}
-            on:change={({ detail: value }) => getDaiContract(value)} />
+          <Input on:change={({ detail: value }) => getDaiContract(value)} />
           <Storage
-            value={storageValue}
+            {storageValue}
             disabled={!window.ethereum || !daiContract}
-            error={errorStorage}
             on:change={({ detail: value }) => change(value)} />
         </div>
       </div>

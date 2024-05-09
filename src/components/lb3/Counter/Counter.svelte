@@ -1,40 +1,30 @@
 <script lang="ts">
-  import { getAddress } from 'ethers';
   import { createEventDispatcher } from 'svelte';
-  import Input from '../components/Input.svelte';
-  import { getContract } from '../utils/web3.svelte';
+  import Input from '../../components/Input.svelte';
+  import { getContract } from '../../utils/web3.svelte';
   import daiAbi from './Counter.json';
   import Buttons from './components/Buttons.svelte';
 
   const dispatch = createEventDispatcher();
 
   $: count = 0;
-  $: error = '';
 
   let daiContract: Counter | null;
   $: daiContract = null;
 
-  let daiAddress: string;
-  $: daiAddress = '';
-
-  async function getDaiContract(_daiAddress: string | null = null) {
-    try {
-      error = '';
-      count = 0;
-      daiAddress = getAddress(_daiAddress ?? '');
-    } catch {
-      daiContract = null;
-      error = 'Адрес не вірний';
-      return;
-    }
-
+  async function getDaiContract(daiAddress: string) {
     daiContract = (await getContract(daiAddress, daiAbi)) as Counter;
+    await refresh();
+  }
+
+  async function refresh() {
+    if (!daiContract) return;
     try {
-      count = Number(await daiContract!.getCount());
+      count = Number(await daiContract.getCount());
     } catch (exception) {
+      count = 0;
       daiContract = null;
-      error = 'Помилка завантаження';
-      return;
+      alert('Помилка завантаження');
     }
   }
 
@@ -42,7 +32,7 @@
     dispatch('load', true);
     try {
       console.log(await (await daiContract!.incrementCounter()).wait());
-      count = Number(await daiContract!.getCount());
+      await refresh();
     } catch {
       alert('Транзакція відхилена');
     } finally {
@@ -54,7 +44,7 @@
     dispatch('load', true);
     try {
       console.log(await (await daiContract!.decrementCounter()).wait());
-      count = Number(await daiContract!.getCount());
+      await refresh();
     } catch {
       alert('Транзакція відхилена');
     } finally {
@@ -69,10 +59,8 @@
       <div class="container">
         <div class="indecResult__content">
           <Input
-            {daiAddress}
-            {error}
             placeholder="Введіть counter AT"
-            on:change={({ detail: value }) => getDaiContract(value)} />
+            on:change={({ detail: address }) => getDaiContract(address)} />
           <Buttons
             {count}
             disabled={!window.ethereum || !daiContract}

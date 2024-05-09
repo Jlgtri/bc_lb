@@ -1,15 +1,12 @@
 <script lang="ts">
-  import { getAddress } from 'ethers';
   import { createEventDispatcher } from 'svelte';
-  import Input from '../components/Input.svelte';
-  import { getContract } from '../utils/web3.svelte';
+  import Input from '../../components/Input.svelte';
+  import { getContract } from '../../utils/web3.svelte';
   import daiAbi from './Payment.json';
   import PaymentForm from './components/PaymentForm.svelte';
   import Statistics from './components/Statistics.svelte';
 
   const dispatch = createEventDispatcher();
-
-  $: error = '';
 
   let transactionAmount: bigint | null;
   $: transactionAmount = null;
@@ -20,31 +17,19 @@
   let daiContract: Payment | null;
   $: daiContract = null;
 
-  let daiAddress: string;
-  $: daiAddress = '';
-
-  async function getDaiContract(_daiAddress: string | null = null) {
-    error = '';
-    transactionAmount = transactionCount = null;
-
-    try {
-      daiAddress = getAddress(_daiAddress ?? '');
-    } catch {
-      daiContract = null;
-      error = 'Адрес не вірний';
-      return;
-    }
-
+  async function getDaiContract(daiAddress: string) {
     daiContract = (await getContract(daiAddress, daiAbi)) as Payment;
+    await refresh();
+  }
 
+  async function refresh() {
+    if (!daiContract) return;
     try {
-      transactionAmount = await daiContract!.transactionAmount();
-      transactionCount = await daiContract!.transactionCount();
+      transactionAmount = await daiContract.transactionAmount();
+      transactionCount = await daiContract.transactionCount();
     } catch {
-      transactionAmount = transactionCount = null;
-      daiContract = null;
-      error = 'Помилка завантаження';
-      return;
+      daiContract = transactionAmount = transactionCount = null;
+      alert('Помилка завантаження');
     }
   }
 
@@ -55,8 +40,7 @@
         value: amount,
       });
       console.log(await tx.wait());
-      transactionAmount = await daiContract!.transactionAmount();
-      transactionCount = await daiContract!.transactionCount();
+      await refresh();
     } catch {
       alert('Транзакція відхилена');
     } finally {
@@ -71,9 +55,7 @@
       <div class="container">
         <div class="indecResult__content">
           <Input
-            {daiAddress}
-            {error}
-            on:change={({ detail: value }) => getDaiContract(value)} />
+            on:change={({ detail: address }) => getDaiContract(address)} />
           <Statistics {transactionCount} {transactionAmount} />
           <PaymentForm
             disabled={!window.ethereum || !daiContract}

@@ -12,9 +12,7 @@
   export async function switchChain(
     chainId: string = import.meta.env.PUBLIC_CHAIN_ID,
   ) {
-    if (!window.ethereum || window.ethereum.networkVersion == chainId) {
-      return;
-    }
+    if (!window.ethereum || window.ethereum.networkVersion == chainId) return;
 
     try {
       await window.ethereum.request({

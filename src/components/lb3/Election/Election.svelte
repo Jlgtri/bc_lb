@@ -1,8 +1,8 @@
 <script lang="ts">
   import { getAddress } from 'ethers';
   import { createEventDispatcher } from 'svelte';
-  import Input from '../components/Input.svelte';
-  import { getContract } from '../utils/web3.svelte';
+  import Input from '../../components/Input.svelte';
+  import { getContract } from '../../utils/web3.svelte';
   import daiAbi from './Election.json';
   import AddCandidate from './components/AddCandidate.svelte';
   import Buttons from './components/Buttons.svelte';
@@ -15,11 +15,8 @@
 
   $: candidatesCount = 0;
   $: winner = '';
-
   $: popupMode = false;
   $: popupBody = 0;
-
-  $: error = '';
 
   const emptyCandidate = {} as Candidate;
   $: candidate = emptyCandidate;
@@ -27,30 +24,24 @@
   let daiContract: Election | null;
   $: daiContract = null;
 
-  let daiAddress: string;
-  $: daiAddress = '';
+  async function getDaiContract(daiAddress: string) {
+    daiContract = (await getContract(daiAddress, daiAbi)) as Election;
+    await refresh();
+  }
 
-  async function getDaiContract(_daiAddress: string | null = null) {
+  async function refresh() {
+    if (!daiContract) return;
     try {
+      candidatesCount = await daiContract.candidatesCount();
+      const id = await daiContract.winningProposal();
+      winner = (await daiContract.candidates(id))?.lastName ?? '';
+    } catch {
+      daiContract = null;
       candidatesCount = 0;
       winner = '';
       popupMode = false;
       popupBody = 0;
-      error = '';
-      daiAddress = getAddress(_daiAddress ?? '');
-    } catch {
-      daiContract = null;
-      error = 'Адрес не вірний';
-      return;
-    }
-
-    daiContract = (await getContract(daiAddress, daiAbi)) as Election;
-    try {
-      await getTableInfo();
-    } catch {
-      daiContract = null;
-      error = 'Помилка завантаження';
-      return;
+      alert('Помилка завантаження');
     }
   }
 
@@ -91,28 +82,19 @@
     dispatch('load', true);
     try {
       console.log(await (await daiContract!.vote(id)).wait());
-      await getTableInfo();
+      await refresh();
     } catch (_) {
       alert('Транзакція відхилена');
     } finally {
       dispatch('load', false);
     }
   }
-
-  async function getTableInfo() {
-    candidatesCount = await daiContract!.candidatesCount();
-    const id = await daiContract!.winningProposal();
-    winner = (await daiContract!.candidates(id))?.lastName ?? '';
-  }
 </script>
 
 <div class="content">
   <main class="main">
     <div class="centerForm">
-      <Input
-        {daiAddress}
-        {error}
-        on:change={({ detail: value }) => getDaiContract(value)} />
+      <Input on:change={({ detail: address }) => getDaiContract(address)} />
 
       <div class="mainForm">
         <ResultTable {candidatesCount} {winner} />

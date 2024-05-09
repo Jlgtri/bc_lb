@@ -19,7 +19,6 @@
     } catch {
       payAddress = '';
       errorAddress = 'Значення не підходить';
-      return;
     }
   }
 
@@ -31,7 +30,6 @@
     } catch {
       payAmount = '';
       errorAmount = 'Значення не підходить';
-      return;
     }
   }
 </script>

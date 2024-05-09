@@ -62,4 +62,12 @@ declare global {
     readonly transactionAmount(): Promise<bigint>;
     readonly transactionCount(): Promise<number>;
   }
+
+  interface VendingMachine extends Contract {
+    readonly purchase(amount: number, ...options): Promise<TransactionResponse>;
+    readonly refill(amount: number): Promise<TransactionResponse>;
+
+    readonly cupcakeBalances(address: string): Promise<number>;
+    readonly owner(): Promise<string>;
+  }
 }

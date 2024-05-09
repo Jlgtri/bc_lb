@@ -1,11 +1,21 @@
 <script lang="ts">
+  import { getAddress } from 'ethers';
   import { createEventDispatcher } from 'svelte';
 
-  export let daiAddress: string,
-    placeholder: string = 'Введіть значення',
-    error: string = '';
+  export let placeholder: string = 'Введіть значення';
 
   const dispatch = createEventDispatcher();
+
+  $: error = '';
+
+  async function change(value: string) {
+    try {
+      error = '';
+      dispatch('change', getAddress(value).toLowerCase());
+    } catch {
+      error = 'Адрес не вірний';
+    }
+  }
 </script>
 
 <div class="input">
@@ -13,8 +23,7 @@
   <input
     type="text"
     {placeholder}
-    value={daiAddress}
-    on:input={(e) => dispatch('change', e.currentTarget.value)} />
+    on:input={(e) => change(e.currentTarget.value)} />
   <div class="input__error">{error}</div>
 </div>
 

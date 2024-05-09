@@ -1,13 +1,22 @@
 <script lang="ts">
-  export let address: string = '',
-    disabled: boolean = false;
-
+  import { getAddress } from 'ethers';
   import { createEventDispatcher } from 'svelte';
+
+  export let disabled: boolean = false;
 
   const dispatch = createEventDispatcher();
 
   $: id = '';
-  $: _address = address;
+  $: address = '';
+
+  async function changeAddress(value: string) {
+    try {
+      getAddress(value);
+      address = value;
+    } catch (exception) {
+      ('Адрес не вірний');
+    }
+  }
 </script>
 
 <div class="vote">
@@ -27,9 +36,10 @@
       type="text"
       placeholder="введіть адресу користувача"
       {disabled}
-      value={_address}
-      on:change={(e) => (_address = e.currentTarget.value)} />
-    <button {disabled} on:click={() => dispatch('check', _address)}>
+      on:change={(e) => changeAddress(e.currentTarget.value)} />
+    <button
+      disabled={disabled || !address}
+      on:click={() => dispatch('check', address)}>
       Перевірка голосування
     </button>
   </div>

@@ -1,8 +1,63 @@
 ---
-import Preloader from '../components/Preloader.svelte';
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="LB3">
-  <Preloader client:only="svelte" />
+<Layout title="Blockchain Smart Contracts">
+  <div class="center">
+    <a class="button" href="/lb3">
+      <span>Lab 3</span>
+    </a>
+    <a class="button" href="/lb4">
+      <span>Lab 4</span>
+    </a>
+  </div>
 </Layout>
+
+<style>
+  .center {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  a.button {
+    display: inline-block;
+    border-radius: 4px;
+    background-color: #3d405b;
+    border: none;
+    color: #ffffff;
+    text-align: center;
+    font-size: 17px;
+    padding: 16px;
+    width: 130px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin: 5px;
+  }
+
+  a.button span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+  }
+
+  a.button span:after {
+    content: '»';
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -15px;
+    transition: 0.5s;
+  }
+
+  a.button:hover span {
+    padding-right: 15px;
+  }
+
+  a.button:hover span:after {
+    opacity: 1;
+    right: 0;
+  }
+</style>
