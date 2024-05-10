@@ -11,18 +11,17 @@
   const dispatch = createEventDispatcher();
 
   let balance: number | null, total: number | null;
+  let owner: string | null, isOwner: boolean | null;
   $: balance = null;
   $: total = null;
-  $: owner = '';
-  $: isOwner = false;
+  $: owner = null;
+  $: isOwner = null;
 
   let daiContract: VendingMachine | null;
   $: daiContract = null;
 
-  window.ethereum?.on('accountsChanged', refresh);
-
   async function getDaiContract(daiAddress: string) {
-    owner = '';
+    owner = null;
     daiContract = (await getContract(daiAddress, daiAbi)) as VendingMachine;
     await refresh();
   }
@@ -75,8 +74,8 @@
     } catch {
       daiContract = null;
       balance = total = null;
-      owner = '';
-      isOwner = false;
+      owner = null;
+      isOwner = null;
       alert('Помилка завантаження');
     }
   }
@@ -102,7 +101,7 @@
             on:change={({ detail: address }) => getDaiContract(address)} />
           <Balances {balance} {total}></Balances>
           <BuyCapcake
-            refill={isOwner}
+            refill={!!isOwner}
             disabled={!window.ethereum || !daiContract}
             on:change={({ detail: amount }) =>
               isOwner ? refill(amount) : purchase(amount)} />

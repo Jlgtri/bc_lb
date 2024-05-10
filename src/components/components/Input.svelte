@@ -7,16 +7,21 @@
 
   const dispatch = createEventDispatcher();
 
+  let address = '';
   $: error = '';
 
   async function change(value: string) {
     try {
       error = '';
-      dispatch('change', getAddress(value).toLowerCase());
+      dispatch('change', (address = getAddress(value).toLowerCase()));
     } catch {
       error = 'Адрес не вірний';
     }
   }
+
+  window.ethereum?.on('accountsChanged', () =>
+    address ? dispatch('change', address) : null,
+  );
 </script>
 
 <div class="input">

@@ -23,8 +23,6 @@
   let daiContract: LockedFunds | null;
   $: daiContract = null;
 
-  window.ethereum?.on('accountsChanged', refresh);
-
   async function getDaiContract(daiAddress: string) {
     timestamp = lockTime = null;
     owner = null;

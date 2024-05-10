@@ -30,12 +30,6 @@
   let daiContract: SimpleTrustlessEscrow | null;
   $: daiContract = null;
 
-  window.ethereum?.on('accountsChanged', async () =>
-    daiContract != null
-      ? getDaiContract(await daiContract!.getAddress())
-      : null,
-  );
-
   async function getDaiContract(daiAddress: string) {
     depositor = beneficiary = releaseTime = balance = null;
     daiContract = (await getContract(
