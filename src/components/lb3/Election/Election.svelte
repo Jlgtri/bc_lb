@@ -3,7 +3,6 @@
   import { createEventDispatcher } from 'svelte';
   import Input from '../../components/Input.svelte';
   import { getContract } from '../../utils/web3.svelte';
-  import daiAbi from './Election.json';
   import AddCandidate from './components/AddCandidate.svelte';
   import Buttons from './components/Buttons.svelte';
   import FormVote from './components/FormVote.svelte';
@@ -25,7 +24,7 @@
   $: daiContract = null;
 
   async function getDaiContract(daiAddress: string) {
-    daiContract = (await getContract(daiAddress, daiAbi)) as Election;
+    daiContract = await getContract<Election>('Election', daiAddress);
     await refresh();
   }
 
@@ -133,7 +132,7 @@
 <style lang="scss">
   .main {
     min-height: 100vh;
-    background-image: url('https://images.wallpaperscraft.ru/image/single/minimalizm_nebo_oblaka_95458_1920x1080.jpg');
+    background-image: url('minimalizm_nebo_oblaka_95458_1920x1080.jpg');
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;

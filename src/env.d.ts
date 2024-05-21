@@ -1,9 +1,8 @@
 /// <reference path="../.astro/types.d.ts" />
 /// <reference types="astro/client" />
 
-import { MetaMaskInpageProvider } from '@metamask/providers';
-import { Contract, TransactionResponse } from 'ethers';
-
+import { MetaMaskInpageProvider } from "@metamask/providers";
+import { Contract, TransactionResponse } from "ethers";
 
 declare global {
   interface ImportMetaEnv {
@@ -45,7 +44,7 @@ declare global {
       _lastName: string,
       _name: string,
       _patronymic: string,
-      info: string,
+      info: string
     ): Promise<TransactionResponse>;
     readonly vote(_candidateId: number): Promise<TransactionResponse>;
 
@@ -56,7 +55,10 @@ declare global {
   }
 
   interface Payment extends Contract {
-    readonly payBill(address: string, ...options): Promise<TransactionResponse>;
+    readonly payBill(
+      address: string,
+      ...options: [{ value: bigint }]
+    ): Promise<TransactionResponse>;
 
     readonly getBalance(): Promise<number>;
     readonly transactionAmount(): Promise<bigint>;
@@ -64,7 +66,10 @@ declare global {
   }
 
   interface VendingMachine extends Contract {
-    readonly purchase(amount: number, ...options): Promise<TransactionResponse>;
+    readonly purchase(
+      amount: number,
+      ...options: [{ value: bigint }]
+    ): Promise<TransactionResponse>;
     readonly refill(amount: number): Promise<TransactionResponse>;
 
     readonly cupcakeBalances(address: string): Promise<number>;
@@ -72,7 +77,9 @@ declare global {
   }
 
   interface LockedFunds extends Contract {
-    readonly deposit(...options): Promise<TransactionResponse>;
+    readonly deposit(
+      ...options: [{ value: bigint }]
+    ): Promise<TransactionResponse>;
     readonly withdraw(): Promise<TransactionResponse>;
 
     readonly deposits(address: string): Promise<bigint>;
@@ -90,5 +97,41 @@ declare global {
     readonly depositor(): Promise<string>;
     readonly getBalance(): Promise<bigint>;
     readonly releaseTime(): Promise<bigint>;
+  }
+
+  interface Loan {
+    amount: bigint;
+    expiresAt: bigint;
+    previousSettleAt: bigint;
+    interestRate: bigint;
+  }
+
+  interface CreditPlatform extends Contract {
+    readonly acquire(
+      amount: bigint,
+      duration: bigint,
+      collateral: string
+    ): Promise<TransactionResponse>;
+    readonly deposit(
+      ...options: [{ value: bigint }]
+    ): Promise<TransactionResponse>;
+    readonly setInterestRate(amount: bigint): Promise<TransactionResponse>;
+    readonly setMinimumAcquireAmount(
+      amount: bigint
+    ): Promise<TransactionResponse>;
+    readonly settle(
+      ...options: [{ value: bigint }]
+    ): Promise<TransactionResponse>;
+    readonly settleDefault(recepient: string): Promise<TransactionResponse>;
+    readonly withdraw(amount: bigint): Promise<TransactionResponse>;
+
+    readonly activeLoans(address: string): Promise<Loan>;
+    readonly getBalance(): Promise<bigint>;
+    readonly getLoanAmount(): Promise<bigint>;
+    readonly interestRate(): Promise<bigint>;
+    readonly interestRateRatio(): Promise<bigint>;
+    readonly loanPeriod(): Promise<bigint>;
+    readonly minimumAcquireAmount(): Promise<bigint>;
+    readonly owner(): Promise<string>;
   }
 }

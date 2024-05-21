@@ -14,9 +14,19 @@
       "options": {
         "parser": "svelte"
       }
+    },
+    {
+      "files": "*.sol",
+      "options": {
+        "parser": "solidity-parse"
+      }
     }
   ],
-  "plugins": ["prettier-plugin-astro", "prettier-plugin-svelte"],
+  "plugins": [
+    "prettier-plugin-astro",
+    "prettier-plugin-svelte",
+    "prettier-plugin-solidity"
+  ],
   "printWidth": 79,
   "singleAttributePerLine": false,
   "singleQuote": true,

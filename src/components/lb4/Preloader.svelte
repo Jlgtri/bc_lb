@@ -1,4 +1,5 @@
 <script lang="ts">
+  import CreditPlatform from './CreditPlatform/CreditPlatform.svelte';
   import LockedFunds from './LockedFunds/LockedFunds.svelte';
   import SimpleTrustlessEscrow from './SimpleTrustlessEscrow/SimpleTrustlessEscrow.svelte';
   import VendingMachine from './VendingMachine/VendingMachine.svelte';
@@ -13,6 +14,7 @@
 <VendingMachine on:load={({ detail: value }) => (isFetching = value)} />
 <LockedFunds on:load={({ detail: value }) => (isFetching = value)} />
 <SimpleTrustlessEscrow on:load={({ detail: value }) => (isFetching = value)} />
+<CreditPlatform on:load={({ detail: value }) => (isFetching = value)} />
 
 <style lang="scss">
   .preloader {

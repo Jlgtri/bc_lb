@@ -2,11 +2,9 @@
   import {
     BrowserProvider,
     Contract,
-    Interface,
     getDefaultProvider,
     toBeHex,
     type Eip1193Provider,
-    type InterfaceAbi,
   } from 'ethers';
 
   export async function switchChain(
@@ -43,22 +41,24 @@
     }
   }
 
-  export async function getContract(
+  export async function getContract<T extends Contract>(
+    name: string,
     address: string,
-    abi: Interface | InterfaceAbi,
   ) {
+    const response = await fetch(`/api/${name}.json`);
+    const abi = await response.json();
     if (!window.ethereum || !window.ethereum.isConnected()) {
       alert(
         'MetaMask не встановлено; ' +
           'використовуючи значення за замовчуванням лише для читання',
       );
       let provider = getDefaultProvider('sepolia');
-      return new Contract(address, abi, provider);
+      return new Contract(address, abi, provider) as T;
     }
 
     await switchChain();
     let provider = new BrowserProvider(window.ethereum as Eip1193Provider);
     const signer = await provider.getSigner();
-    return new Contract(address, abi, signer);
+    return new Contract(address, abi, signer) as T;
   }
 </script>

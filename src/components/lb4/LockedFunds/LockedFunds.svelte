@@ -2,7 +2,6 @@
   import { createEventDispatcher } from 'svelte';
   import Input from '../../components/Input.svelte';
   import { getContract } from '../../utils/web3.svelte';
-  import daiAbi from './LockedFunds.json';
   import DepositForm from './components/DepositForm.svelte';
   import Deposits from './components/Deposits.svelte';
 
@@ -26,7 +25,7 @@
   async function getDaiContract(daiAddress: string) {
     timestamp = lockTime = null;
     owner = null;
-    daiContract = (await getContract(daiAddress, daiAbi)) as LockedFunds;
+    daiContract = await getContract<LockedFunds>('LockedFunds', daiAddress);
     await refresh();
   }
 
@@ -127,7 +126,7 @@
   }
   .indecResult {
     height: 100%;
-    background-image: url('https://images.wallpaperscraft.ru/image/single/minimalizm_nebo_oblaka_95458_1920x1080.jpg');
+    background-image: url('minimalizm_nebo_oblaka_95458_1920x1080.jpg');
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
