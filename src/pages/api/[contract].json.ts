@@ -5,7 +5,7 @@ import { CompileFailedError, compileSol } from 'solc-typed-ast';
 
 const CONTRACTS_FOLDER: string = 'contracts';
 
-export const GET: APIRoute = async ({ params, request }) => {
+export const GET: APIRoute = async ({ params }) => {
   if (!params.contract) return new Response(null, { status: 400 });
 
   const contract: string = params.contract;
