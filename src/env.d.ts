@@ -54,15 +54,16 @@ declare global {
     readonly winningProposal(): Promise<number>;
   }
 
-  interface Payment extends Contract {
-    readonly payBill(
-      address: string,
+  interface PaymentSystem extends Contract {
+    readonly deposit(
       ...options: [{ value: bigint }]
     ): Promise<TransactionResponse>;
+    readonly transfer(
+      to: string,
+      amount: bigint,
+    ): Promise<TransactionResponse>;
 
-    readonly getBalance(): Promise<number>;
-    readonly transactionAmount(): Promise<bigint>;
-    readonly transactionCount(): Promise<number>;
+    readonly getBalance(user: string): Promise<bigint>;
   }
 
   interface VendingMachine extends Contract {

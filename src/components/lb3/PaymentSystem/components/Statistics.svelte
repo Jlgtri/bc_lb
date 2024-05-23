@@ -5,13 +5,13 @@
     transactionAmount: bigint | null = null;
 </script>
 
-<div class="storage">
+<div class="stats">
   <span>Кількість транзакцій</span>
-  <span class="storage__getValue">
+  <span class="stats__getValue">
     {transactionCount ?? 'Не визначена'}
   </span>
   <span>Cума транзакцій</span>
-  <span class="storage__getValue">
+  <span class="stats__getValue">
     {transactionAmount !== null
       ? formatEther(transactionAmount) + ' ETH'
       : 'Не визначена'}
@@ -19,7 +19,7 @@
 </div>
 
 <style lang="scss">
-  .storage {
+  .stats {
     border: 1px solid black;
     border-radius: 5px;
     padding: 10px;

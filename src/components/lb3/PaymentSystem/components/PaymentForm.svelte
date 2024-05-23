@@ -7,17 +7,18 @@
   $: errorAmount = '';
   $: errorAddress = '';
 
-  $: payAddress = '';
-  $: payAmount = '';
+  let address: string | null, amount: bigint | null;
+  $: address = null;
+  $: amount = null;
 
   const dispatch = createEventDispatcher();
 
   async function changeAddress(value: string) {
     errorAddress = '';
     try {
-      payAddress = getAddress(value);
+      address = getAddress(value);
     } catch {
-      payAddress = '';
+      address = '';
       errorAddress = 'Значення не підходить';
     }
   }
@@ -25,10 +26,9 @@
   async function changeAmount(value: string) {
     errorAmount = '';
     try {
-      parseEther(value);
-      payAmount = value;
+      amount = parseEther(value);
     } catch {
-      payAmount = '';
+      amount = null;
       errorAmount = 'Значення не підходить';
     }
   }
@@ -36,35 +36,32 @@
 
 <div class="storage">
   <span class="storage__setValue">
-    <div>
-      <input
-        type="text"
-        placeholder="Введіть адрессу отримувача"
-        value={payAddress}
-        {disabled}
-        on:change={(e) => changeAddress(e.currentTarget.value)} />
-      <span class="storage__error">{errorAddress}</span>
-    </div>
+    <input
+      type="text"
+      placeholder="Введіть адресу отримувача"
+      value={address}
+      {disabled}
+      on:change={(e) => changeAddress(e.currentTarget.value)} />
 
-    <div>
-      <input
-        type="number"
-        placeholder="Введіть суму"
-        value={payAmount}
-        {disabled}
-        on:change={(e) => changeAmount(e.currentTarget.value)} />
-      <span class="storage__error">{errorAmount}</span>
-    </div>
+    <input
+      type="number"
+      placeholder="Введіть суму"
+      value={amount}
+      {disabled}
+      on:change={(e) => changeAmount(e.currentTarget.value)} />
+
     <button
-      disabled={!payAddress || !payAmount}
+      disabled={!address || !amount}
       on:click={() =>
-        dispatch('change', {
-          address: payAddress,
-          amount: parseEther(payAmount),
+        dispatch('transfer', {
+          address,
+          amount,
         })}>
-      Pay Bill
+      Перевести
     </button>
   </span>
+  <span class="storage__error">{errorAddress}</span>
+  <span class="storage__error">{errorAmount}</span>
 </div>
 
 <style lang="scss">
@@ -77,6 +74,13 @@
     &__setValue {
       border-radius: 0px 5px 5px 0px;
       overflow: hidden;
+      display: grid;
+      grid-template-columns: 40% 30% 20%;
+      gap: 20px;
+
+      input {
+        width: 100%;
+      }
 
       button {
         cursor: pointer;
@@ -96,7 +100,6 @@
     }
 
     &__error {
-      width: 20%;
       text-align: center;
       font-weight: normal;
       font-size: 16px;

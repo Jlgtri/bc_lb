@@ -1,45 +1,65 @@
 <script lang="ts">
+  import type { EventLog } from 'ethers';
   import { createEventDispatcher } from 'svelte';
   import Input from '../../components/Input.svelte';
   import { getContract } from '../../utils/web3.svelte';
+  import DepositForm from './components/DepositForm.svelte';
   import PaymentForm from './components/PaymentForm.svelte';
   import Statistics from './components/Statistics.svelte';
 
   const dispatch = createEventDispatcher();
 
-  let transactionAmount: bigint | null;
+  let balance: bigint | null;
+  let transactionAmount: bigint | null, transactionCount: number | null;
+  let daiContract: PaymentSystem | null;
   $: transactionAmount = null;
-
-  let transactionCount: number | null;
-  $: transactionCount = null;
-
-  let daiContract: Payment | null;
   $: daiContract = null;
 
   async function getDaiContract(daiAddress: string) {
-    daiContract = await getContract<Payment>('Payment', daiAddress);
+    daiContract = await getContract<PaymentSystem>(
+      'PaymentSystem',
+      daiAddress,
+    );
+    daiContract.on('Transfer', refresh);
     await refresh();
   }
 
   async function refresh() {
     if (!daiContract) return;
     try {
-      transactionAmount = await daiContract.transactionAmount();
-      transactionCount = await daiContract.transactionCount();
+      let userAddress = window.ethereum!.selectedAddress!.toLowerCase();
+      balance = await daiContract!.getBalance(userAddress);
+
+      const transfers = await daiContract.queryFilter('Transfer');
+      transactionCount = transfers.length;
+      transactionAmount = (transfers as EventLog[]).reduce(
+        (total, event) => total + event.args[2],
+        BigInt(0),
+      );
     } catch {
-      daiContract = transactionAmount = transactionCount = null;
+      balance = transactionAmount = transactionCount = daiContract = null;
       alert('Помилка завантаження');
     }
   }
 
-  async function payBill(address: string, amount: bigint) {
+  async function deposit(amount: bigint) {
     dispatch('load', true);
     try {
-      const tx = await daiContract!.payBill(address, {
-        value: amount,
-      });
+      const tx = await daiContract!.deposit({ value: amount });
       console.log(await tx.wait());
       await refresh();
+    } catch {
+      alert('Транзакція відхилена');
+    } finally {
+      dispatch('load', false);
+    }
+  }
+
+  async function transfer(address: string, amount: bigint) {
+    dispatch('load', true);
+    try {
+      const tx = await daiContract!.transfer(address, amount);
+      console.log(await tx.wait());
     } catch {
       alert('Транзакція відхилена');
     } finally {
@@ -57,10 +77,16 @@
             name="Payment"
             on:change={({ detail: address }) => getDaiContract(address)} />
           <Statistics {transactionCount} {transactionAmount} />
-          <PaymentForm
+          <DepositForm
+            {balance}
             disabled={!window.ethereum || !daiContract}
-            on:change={({ detail: { address, amount } }) =>
-              payBill(address, amount)} />
+            on:deposit={({ detail: amount }) => deposit(amount)} />
+          {#if balance}
+            <PaymentForm
+              disabled={!window.ethereum || !daiContract}
+              on:transfer={({ detail: { address, amount } }) =>
+                transfer(address, amount)} />
+          {/if}
         </div>
       </div>
     </div>

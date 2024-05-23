@@ -1,7 +1,7 @@
 <script lang="ts">
   import Counter from './Counter/Counter.svelte';
   import Election from './Election/Election.svelte';
-  import Payment from './Payment/Payment.svelte';
+  import Payment from './PaymentSystem/PaymentSystem.svelte';
   import SimpleStorage from './SimpleStorage/SimpleStorage.svelte';
 
   $: isFetching = false;
