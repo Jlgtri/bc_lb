@@ -122,7 +122,7 @@
   }
   .indecResult {
     height: 100%;
-    background-image: url('minimalizm_nebo_oblaka_95458_1920x1080.jpg');
+    background-image: url('/minimalizm_nebo_oblaka_95458_1920x1080.jpg');
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
